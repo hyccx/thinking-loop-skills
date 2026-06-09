@@ -1,0 +1,4 @@
+interface:
+  display_name: "Need Extractor"
+  short_description: "从用户的模糊吐槽与纠结中自动还原真实需求，识别伪需求与过度设计"
+  default_prompt: "请帮我提取真实需求"

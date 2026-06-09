@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Maintainer"
+  short_description: "审查、诊断、修正 Codex skills 的 meta-skill，避免技能膨胀与职责重叠"
+  default_prompt: "帮我诊断这个 skill 的问题"
