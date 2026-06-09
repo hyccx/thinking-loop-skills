@@ -5,7 +5,7 @@
 目标是把模糊想法处理成：
 
 ```text
-真实需求 → 想法扩散 → 想法审查 → 路线排序 → 下一步行动 → Obsidian 记录
+真实需求 → 想法扩散 → 想法审查 → 路线排序 → 下一步行动
 ```
 
 ---
@@ -19,8 +19,6 @@ thinking-loop-skills/
 ├── idea-auditor            # 审查想法是否过度设计
 ├── route-judge             # 多路线排序
 ├── project-next-step       # 裁剪下一步行动
-├── ob-capture-thought      # 保存 Obsidian Raw
-├── ob-distill-knowledge    # 提炼 Knowledge 阶段快照
 └── skill-maintainer        # 维护和修复 skills 系统
 ```
 
@@ -36,8 +34,6 @@ need-extractor
 → idea-auditor
 → route-judge
 → project-next-step
-→ ob-capture-thought
-→ ob-distill-knowledge
 ```
 
 旁路维护：
@@ -96,15 +92,6 @@ $route-judge
 $project-next-step
 
 请把这个方向裁剪成下一步 1-3 个动作：
-……
-```
-
-保存到 Obsidian Raw：
-
-```text
-$ob-capture-thought
-
-请把这次思维变化整理成 Obsidian Raw：
 ……
 ```
 

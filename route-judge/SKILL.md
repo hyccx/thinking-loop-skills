@@ -1,4 +1,4 @@
----
+﻿---
 name: route-judge
 description: Use when there are two or more audited candidate routes and the user needs ranking, prioritization, sequencing, or a first recommendation. Do not use for idea expansion, raw auditing, full project planning, Obsidian note writing, or direct file modification.
 ---
@@ -6,6 +6,14 @@ description: Use when there are two or more audited candidate routes and the use
 # Route Judge
 
 Rank 2+ audited candidate routes by user constraints. Output first choice, second choice, not-now, later-consider, with rationale and minimal validation experiment.
+
+## Execution Rules
+
+- Default output: ≤500 Chinese characters (ranking body only).
+- After producing ranked output, stop immediately. Do not expand or generate new ideas.
+- Do not read references/ or templates/ unless a ranking criterion is unclear.
+- Do not re-open routes that have been marked "do not touch now".
+
 
 ## Core Tasks
 

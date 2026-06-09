@@ -1,4 +1,4 @@
----
+﻿---
 name: idea-expander
 description: Use when the user has a new idea, vague direction, project thought, Obsidian structure idea, Agent feature idea, skill-system idea, or asks to expand possibilities, discover missing angles, generate better questions, use analogies, reverse the framing, scan dimensions, or open up thinking. Produce limited idea expansion using trigger-based thinking. Do not use for final decision-making, strict auditing, route ranking, full project planning, Obsidian note writing, or direct file modification.
 ---
@@ -77,6 +77,14 @@ Trigger: no explicit mode request; auto-detect from user phrasing
 Behavior: Select 1-2 triggers from trigger-library based on implicit intent
 Output: templates/triggered-expansion-output.md
 
+### lean-expansion-mode
+Trigger: user says "小小扩散 / 简单启发 / just a hint / lean". Lightest mode.
+Count: 1 trigger, max 3 total results.
+Does NOT read any references, templates, examples, or tests.
+Output ≤500 Chinese characters (expansion body only).
+Default for very short or cautious requests.
+
+
 ## Trigger Selection
 
 ### Explicit trigger mapping
@@ -117,14 +125,38 @@ When the user doesn't name a mode, scan their phrasing for implicit intent:
 7. MUST include the handoff prompt for idea-auditor.
 8. Never make a final choice.
 
+## Resource Reading Policy
+
+Default: Do NOT read any files from references/, templates/, examples/, or tests/ automatically.
+
+- Only load a reference file when a specific check needs deeper pattern-matching AND the expansion mode allows it:
+  - eferences/trigger-library.md: Load only when implicit detection fails and no trigger matches. Full mode only.
+  - eferences/dimension-library.md: Load only in dimension-scan mode AND when basic dimensions are insufficient.
+  - eferences/perspective-library.md: Load only in perspective-shift mode AND when obvious perspectives don't fit.
+  - eferences/meta-question-patterns.md: Load only in meta-question mode AND when basic question templates don't apply.
+  - eferences/handoff-to-auditor.md: Load only for complex expansions that need a detailed handoff.
+  - eferences/expansion-boundaries.md: Load only when user challenges skill boundaries.
+- templates/: Load only when output format calibration is unclear.
+- examples/ and tests/: Never default.
+
+## Output Budget
+
+- **lean-expansion-mode**: ≤500 Chinese characters
+- **small-expansion-mode / triggered-expansion-mode (default)**: ≤800 Chinese characters
+- **deep-expansion-mode**: ≤1200 Chinese characters
+- **dimension-scan-mode / perspective-shift-mode / meta-question-mode**: ≤1000 Chinese characters
+
 ## Stop Conditions
 
-1. Stop when enough candidate angles or routes have been generated.
-2. Default max: 5 candidate routes.
-3. Dimension scan default max: 8 dimension results.
-4. If user asked for simple: max 3 total results.
-5. If expansion is adding confusion rather than clarity: stop and suggest handoff to idea-auditor.
-6. If the idea is not worth systematizing: stop expanding, suggest recording only.
+Stop expanding when any of these conditions is met:
+
+1. Enough angles or routes have been generated. Default max: 5 candidate routes.
+2. Dimension scan default max: 8 dimension results.
+3. If user asked for simple / lean: max 3 total results across all triggered items.
+4. If expansion is adding confusion rather than clarity: stop and suggest handoff to idea-auditor.
+5. If the idea is not worth systematizing: stop expanding, suggest recording only.
+6. If the user's idea is truly small (no constraints, no domain, no context): output lean-expansion result, do not suggest full audit.
+7. If user responds with "够了" / "this is enough" / "好" → stop immediately. Do not offer additional triggers.
 
 ## Failure Signals
 
@@ -193,5 +225,3 @@ If the idea is small enough (user said "小小扩散"), omit the handoff block a
 - [tests/should_generate_auditor_prompt.md](tests/should_generate_auditor_prompt.md) \u2014 Every expansion includes auditor handoff
 - [tests/should_not_make_final_decision.md](tests/should_not_make_final_decision.md) \u2014 Expander never makes final decisions
 - [tests/should_identify_when_not_to_systematize.md](tests/should_identify_when_not_to_systematize.md) \u2014 Anti-system check: not every idea needs a skill
-
-Do NOT read any of these files automatically. Load only when the task or the user's input requires a specific resource.

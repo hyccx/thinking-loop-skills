@@ -1,4 +1,4 @@
----
+﻿---
 name: idea-auditor
 description: Use to audit a new idea or candidate directions from idea-expander for real need, pseudo-need, overengineering, maintenance cost, current-stage fit, and whether to keep, shrink, park, or cut the idea. Do not use for broad expansion, route ranking, full project planning, Obsidian note writing, or direct file modification.
 ---
@@ -6,6 +6,15 @@ description: Use to audit a new idea or candidate directions from idea-expander 
 # Idea Auditor
 
 Audit candidate ideas or directions from idea-expander for real need, overengineering risk, maintenance cost, and stage fit. Produces clear keep/modify/park/cut conclusions with minimal viable alternatives.
+
+## Mode Selection
+
+The skill auto-selects a mode based on input depth. User can override explicitly.
+
+- **Mini** (default): short input or user says "快速审查" / "quick audit". Compressed audit (9 sections). Does NOT read any references, templates, examples, or tests.
+- **Normal**: standard audit with full 10-section output. Reads references only when a specific judgment criterion needs calibration.
+- **Full**: only when user explicitly asks for "全面审查" / "deep audit" or provides multiple materials. Reads references per Resource Reading Policy.
+
 
 ## Core Tasks
 
@@ -54,10 +63,31 @@ Do NOT use for:
 - 1 route passes → suggest handoff to project-next-step
 - All cut/parked → suggest stop or capture to ob-capture-thought
 
-## Stop Conditions
+## Resource Reading Policy
 
-- Stop after producing conclusion — do not expand further
-- Do not re-open ideas that have been cut
+Default: Do NOT read any files from references/, templates/, examples/, or tests/ automatically.
+
+- Only read a reference file when a specific judgment criterion is unclear AND the mode permits (Mini: never; Normal: rarely; Full: yes).
+- 	emplates/audit-output.md: Load only when format calibration is needed (Normal or Full).
+- examples/ and 	ests/: Never default.
+
+## Output Budget
+
+- **Mini**: ≤500 Chinese characters (audit body only)
+- **Normal**: ≤900 Chinese characters
+- **Full**: ≤1500 Chinese characters (unless explicitly asked for a complete report)
+
+## Early Stop Rules
+
+Stop expanding and output when any of these conditions is met:
+
+1. **Audit complete**: After producing conclusion (Keep/Modify/Park/Cut), do not expand further.
+2. **Cut is final**: Do not re-open ideas that have been cut.
+3. **Pseudo-need clear**: If the idea is clearly a pseudo-need → output "cut" directly with minimal explanation. Do not generate alternatives.
+4. **All cut/parked**: If all routes are cut → stop. Suggest ob-capture-thought if valuable learning exists, otherwise end.
+5. **User agreement**: If user responds with "对" / "正确" / "this is right" → stop. Do not expand or re-audit.
+6. **Single route passes**: If exactly 1 route passes → suggest handoff to project-next-step. Stop there.
+
 
 ## Failure Signals
 

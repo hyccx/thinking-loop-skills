@@ -1,4 +1,4 @@
----
+﻿---
 name: project-next-step
 description: Use when a direction or route has been selected and the user needs the next 1-3 concrete actions, a Codex-ready task prompt, and acceptance criteria. Do not use for broad idea expansion, route ranking, raw need extraction, Obsidian knowledge writing, or direct file modification.
 ---
@@ -6,6 +6,15 @@ description: Use when a direction or route has been selected and the user needs 
 # Project Next Step
 
 Cut the selected direction into 1-3 concrete next actions with Codex-ready prompts and acceptance criteria. No roadmaps, no long-term plans.
+
+## Depth Selection
+
+Auto-selects based on context. User can override explicitly.
+
+- **Basic** (default): Output exactly 1 next action + acceptance criteria. Does NOT read references or templates.
+- **Normal**: Output the full 1-3 actions + Codex prompt + acceptance criteria. Loads 	emplates/next-step-output.md if format calibration is needed.
+- **Full**: Only when user explicitly requests stage planning, multi-path comparison, or "全面规划". May load references for scope judgment. ≤5 actions max in this mode.
+
 
 ## Core Tasks
 
@@ -42,11 +51,17 @@ Do NOT use for:
 ### 7. 完成后怎么复盘
 ### 8. 是否需要交给 ob-capture-thought
 
-## Stop Conditions
 
-- Stop at 3 actions max
-- Do not create a roadmap
-- Do not expand into future phases
+## Early Stop Rules
+
+Stop expanding after output when any of these conditions is met:
+
+1. **One action clear**: If a single concrete action resolves the blocker → output that action and stop. Do not add a second action for safety.
+2. **3 actions reached**: Hard stop at 3 actions. Do not add extras.
+3. **Roadmap detected**: If the output starts looking like a roadmap or future-phase plan → stop and cut back. Do not expand into future phases.
+4. **User satisfied**: If user says "好" / "够了" / "this is enough" → stop. Do not suggest additional steps.
+5. **Blocked dependency**: If the next action depends on something unavailable → note the dependency and stop. Do not design workarounds.
+
 
 ## Failure Signals
 

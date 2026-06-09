@@ -1,33 +1,56 @@
 ---
 name: skill-maintainer
-description: Use when a Codex skill output is unsatisfactory, too generic, too long, too rigid, too complex, triggers incorrectly, overlaps with another skill, violates its boundary, lacks next action, or when deciding whether to modify an existing skill, add a mode/reference/example/test, or create a new skill. Diagnose the failure and produce a minimal patch prompt. Do not use for normal idea expansion, project planning, Obsidian note writing, or general brainstorming.
+description: |
+  Diagnose skill failures and produce minimal, targeted modifications.
+  Use when a skill output is unsatisfactory: too generic, too long, too rigid,
+  too complex, wrong trigger, overlap, boundary violation, no next action,
+  or skill structure repair.
+  Do not use for idea expansion, project planning, note writing, or brainstorming.
+  Default behavior: review first, read only the target SKILL.md unless needed,
+  and prefer the smallest viable fix.
 ---
 
 # Skill Maintainer
 
-## Purpose
+## 1. Purpose
 
 Diagnose skill failures and produce minimal, targeted modifications. This is a meta-skill for maintaining the Codex skills system itself.
 
 It does NOT solve the user's original problem. It fixes the skill that was supposed to help with that problem.
 
-## Core Tasks
+Execution depth adapts to task complexity: Mini (review only), Normal (review + modify one skill), Full (batch/deep maintenance).
 
-1. Determine whether the skill output deviated from its intended behavior.
-2. Classify the deviation type.
-3. Identify root cause file: SKILL.md, description, references, examples, templates, or tests.
-4. Determine remediation type: small edit, add example, add test, revise reference, revise template, add mode, or adjust boundary.
-5. Default: do NOT create a new skill. Prioritize fixing the existing one.
-6. Default: do NOT rewrite the entire skill. Prioritize the smallest possible change.
-7. Determine if this is a one-off glitch. If it happened only once and is not recurring, do not modify rules.
-8. Output a copy-paste-ready modification prompt for Codex.
+## 2. Lean Mode
 
-## When to Use
+Lean Mode is the default execution posture. It means:
+
+- Default: do only the maintenance task the user explicitly asked for
+- Default: read only the target skill's SKILL.md
+- Do NOT automatically read references/, examples/, or tests/
+- Do NOT default to batch modifications
+- Do NOT default to long reports
+- Do NOT default to proposing many alternatives
+- Default to the smallest viable modification
+
+Lean Mode applies across all execution modes. Each mode (Mini/Normal/Full) specifies how strictly Lean is applied.
+
+## 3. Compact Rules
+
+These rules override all other guidance when they apply:
+
+1. **Default to existing.** Fix the current skill. Do NOT create a new one.
+2. **Default to small.** Prioritize adding examples, tests, or references over rewriting SKILL.md.
+3. **One-off filter.** If the issue happened once and is not recurring, do NOT change rules.
+4. **One target at a time.** Do NOT process multiple skills unless explicitly asked.
+5. **Resource discipline.** Default: only the target SKILL.md. See Resource Reading Policy below.
+6. **Detailed diagnostic rules** are in `references/full-rules.md`. Load only when needed (Full Mode, or when SKILL.md alone is insufficient).
+
+## 4. When to Use
 
 Use when:
-- A skill's output was too generic, too long, too rigid, or too complex
+- A skill output was too generic, too long, too rigid, or too complex
 - A skill triggered when it should not have, or did not trigger when it should have
-- Two skills overlap in responsibility or violate each other's boundaries
+- Two skills overlap in responsibility or violate boundaries
 - A skill output lacks a next-action, handoff, or stop condition
 - A skill inflated a small idea into a whole system
 - A skill forgot to check anti-system conditions
@@ -40,121 +63,107 @@ Do NOT use for:
 - General brainstorming
 - Final route ranking
 
-## Diagnosis Steps
+## 5. Mini Mode
 
-### Step 1: Collect evidence
-Read the skill output that was unsatisfactory. Quote specific lines or omissions. Do not rely on vague memory — read the actual output.
+Trigger: User says "看看这个 skill 怎么样", "要不要优化一下", or similar low-commitment review request.
 
-### Step 2: Read the skill's SKILL.md
-Open the relevant skill's SKILL.md. Check:
-- Description: does it accurately describe what happened?
-- Trigger conditions: did the user's input match the trigger?
-- Output rules: did the output follow the rules?
-- Stop conditions: did the output stop when it should have?
-- Boundaries: did the output stay within scope?
+Behavior:
+- Review only. Do NOT modify any files.
+- Read the target skill's SKILL.md (Lean Mode).
+- Output: current issues, whether a fix is needed, and the minimal change scope.
+- Output Budget: ≤500 中文字.
+- Do NOT generate a patch prompt. Only describe what would need to change and why.
 
-### Step 3: Classify deviation type
-Map the failure to one or more types from the list below.
+## 6. Normal Mode
 
-### Step 4: Find root cause file
-Determine which file in the skill directory caused the problem.
+Trigger: User names a specific skill and asks for a fix, optimization, or structure repair. This is the default when Mini Mode criteria are not met.
 
-### Step 5: Determine fix scope
-Choose the smallest fix that prevents recurrence:
-1. Add example (if the skill was vague on a specific scenario)
-2. Add test (if a check is missing)
-3. Add reference (if details belong in a separate file)
-4. Add mode (if a new use case needs different behavior)
-5. Edit SKILL.md rule (if a rule is wrong or missing)
-6. Edit description (if the trigger is wrong)
-7. Adjust boundary / merge skills (if overlap)
+Behavior:
+- Review the target skill and output a modification plan.
+- Only modify when the user explicitly asks for modification, or the current request already clearly requires it.
+- Only change necessary files. Default priority: SKILL.md > references/ > examples/ > tests/.
+- If detailed rules need to be migrated, create or update `references/full-rules.md`.
+- Read additional resources only when needed to verify the fix.
+- Output Budget: ≤1000 中文字 (plan + changes + outcome).
+- After modification, output: which files changed, new file structure, whether original capability is preserved, behavioral changes.
 
-### Step 6: Check one-off filter
-Would this fix matter if the same input was given again? If not, it's a one-off. Do not change rules for one-offs.
+## 7. Full Mode
 
-## Deviation Types
+Trigger: Only enabled when the user explicitly asks for "批量处理", "全量审查", "深度修复", "迁移多个 skill", or similar batch/deep maintenance.
 
-- **太泛** (Too Generic): Output applies to any situation, not the user's specific context.
-- **太长** (Too Long): Output exceeds reasonable length for the mode.
-- **太硬** (Too Rigid): Output follows rules mechanically without adapting to tone or actual intent.
-- **太复杂** (Too Complex): Output introduces unnecessary structure, jargon, or abstractions.
-- **触发不准** (Wrong Trigger): Skill activated when it shouldn't, or failed to activate when it should.
-- **职责重叠** (Overlap): Two skills produce similar outputs for the same input.
-- **输出越界** (Boundary Violation): Output did something outside the skill's stated scope.
-- **没有下一步** (No Next Action): Output ends without telling the user what to do next.
-- **没有 handoff** (No Handoff): Output does not pass to the downstream skill.
-- **把简单问题系统化** (Over-Systematize): A simple, one-shot question was answered with a full system design.
-- **skill 膨胀** (Skill Bloat): The skill has grown too large or covers too many unrelated scenarios.
-- **忘记停止条件** (Ignored Stop): Output continues past the stop condition.
+Behavior:
+- Can read multiple skills.
+- Can read references/, examples/, tests/.
+- Still output scope and plan before starting.
+- Output Budget: ≤1500 中文字 unless the user explicitly asks for a full report.
+- After modification, output the same summary as Normal Mode, plus cross-skill impact notes.
 
-## Core Principles
+## 8. Resource Reading Policy
 
-1. Do not default to creating a new skill. Fix the existing one first.
-2. Do not default to rewriting SKILL.md. Prioritize adding examples, tests, or references.
-3. Each fix addresses exactly one recurring problem.
-4. One-off output dissatisfaction does not warrant rule changes.
-5. SKILL.md holds only: trigger conditions, boundaries, core workflow, output format, and handoff.
-6. Long rules go in references. Real cases go in examples. Anti-deviation checks go in tests.
-7. If a skill becomes too long, split out references first, do not keep stuffing SKILL.md.
-8. The maintenance goal is stability and conciseness, not complexity.
-9. Can be a mode? Do not create a new skill.
-10. Can be a reference? Do not edit SKILL.md.
-11. Can be an example or test? Do not write it as a hard rule.
+Default (Lean): read only the target skill's SKILL.md.
 
-## Output Format
+Read additional resources ONLY when:
+- The user explicitly asks
+- SKILL.md alone is insufficient to determine original capability
+- Examples/tests need verification
+- Detailed rules need to be migrated to references/
+- A reference file's usage needs to be confirmed
 
-Every diagnosis must follow this structure:
-
-### 1. 是否跑偏
-[Yes / No with brief justification]
-
-### 2. 跑偏类型
-[List applicable deviation types from the Deviation Types section]
-
-### 3. 根因判断
-[Which file(s) caused the problem, and why]
-
-### 4. 最小修改建议
-[Specific, minimal modification: which file, what to change, what to add or remove]
-
-### 5. 是否需要新增 skill
-[Yes / No. If yes, justify why existing skills cannot be modified to cover it. Default: No.]
-
-### 6. 给 Codex 的修改 prompt
-[A single, copy-paste-ready prompt block that can be sent directly to Codex to perform the fix]
-
-## Failure Signals
-
-The diagnosis is wrong if:
-- It recommends creating a new skill when an existing one could be patched
-- It recommends rewriting the entire SKILL.md when a small edit would suffice
-- It recommends changing rules for a one-off glitch
-- The patch prompt is vague or requires the engineer to make design decisions
-- The diagnosis describes the problem but does not name the specific file and line to change
-- It makes the skill more complex instead of more stable
-
-## Resources
+Do NOT proactively read all references/, examples/, or tests/ for "safety". Read on demand.
 
 ### references/
-- [patch-strategy.md](references/patch-strategy.md) \u2014 Patch decision tree: when to edit, add, split, or delete
-- [anti-bloat-principles.md](references/anti-bloat-principles.md) \u2014 Principles to prevent skill bloat during maintenance
-- [failure-patterns.md](references/failure-patterns.md) \u2014 Expanded failure patterns with examples
-- [boundary-conflicts.md](references/boundary-conflicts.md) \u2014 How to detect and resolve skill boundary overlaps
-- [deletion-criteria.md](references/deletion-criteria.md) \u2014 When to deprecate or delete a skill entirely
+
+- `references/full-rules.md` — Detailed diagnostic rules: full diagnosis steps, full deviation types, core principles, failure signals
+- `references/patch-strategy.md` — Patch decision tree
+- `references/anti-bloat-principles.md` — Principles to prevent skill bloat
+- `references/failure-patterns.md` — Expanded failure patterns with examples
+- `references/boundary-conflicts.md` — Boundary overlap detection and resolution
+- `references/deletion-criteria.md` — Skill deprecation and deletion criteria
 
 ### templates/
-- [templates/diagnosis-output.md](templates/diagnosis-output.md) \u2014 Output structure template
-- [templates/codex-patch-prompt.md](templates/codex-patch-prompt.md) \u2014 Template for the modification prompt
 
-### examples/
-- [examples/idea-expander-too-broad.md](examples/idea-expander-too-broad.md) \u2014 Diagnosing an overly broad idea-expander output
-- [examples/need-extractor-too-rigid.md](examples/need-extractor-too-rigid.md) \u2014 Diagnosing an overly rigid need-extractor output
-- [examples/skill-overlap-case.md](examples/skill-overlap-case.md) \u2014 Diagnosing boundary overlap between two skills
+- `templates/diagnosis-output.md` — Output structure template
+- `templates/codex-patch-prompt.md` — Modification prompt template
 
-### tests/
-- [tests/should_prefer_small_patch.md](tests/should_prefer_small_patch.md) \u2014 Verify diagnosis prefers small patches over full rewrites
-- [tests/should_not_create_new_skill_by_default.md](tests/should_not_create_new_skill_by_default.md) \u2014 Verify default answer for new skill is "no"
-- [tests/should_detect_boundary_overlap.md](tests/should_detect_boundary_overlap.md) \u2014 Verify overlap detection works
-- [tests/should_identify_when_not_to_change_rules.md](tests/should_identify_when_not_to_change_rules.md) \u2014 Verify one-off filter works
+## 9. Output Budget
 
-Do NOT read any of these files automatically. Load only when the task requires a specific resource.
+| Mode | Budget |
+|---|---|
+| Mini | ≤500 中文字 |
+| Normal | ≤1000 中文字 |
+| Full | ≤1500 中文字 (unless user explicitly asks for full report) |
+
+"Budget" counts the diagnostic/maintenance output, not the user's original question or the SKILL.md content being referenced.
+
+## 10. Early Stop Rules
+
+Stop when:
+- The smallest viable modification has been identified and applied.
+- Do NOT make a simple skill complex.
+- Do NOT add useless fields just to follow a template.
+- Do NOT process multiple skills unless explicitly asked.
+- Do NOT mistake "optimizing execution control" for "removing detailed capability".
+- If the target skill is already correct for Lean Mode, output "No change needed" and stop.
+- If the issue is a one-off, output "One-off — no rule changes needed" and stop.
+
+## 11. Output Format
+
+Select relevant sections based on mode and whether modification was performed.
+
+### Mode
+[Which mode was used: Mini / Normal / Full. Reason for choosing this mode.]
+
+### Diagnosis
+[Is the skill off-track? Yes/No with brief justification. Applicable deviation types. Root cause and file.]
+
+### Modification Plan (Mini: optional when fix needed. Normal/Full: required.)
+[What would need to change, in which file, why.]
+
+### Changes Applied (Only when files were actually modified)
+[Which files changed, new file structure, whether original capability preserved.]
+
+### Behavioral Changes (Only when files were actually modified)
+[How behavior changes before vs after. What stays the same.]
+
+### Next Steps
+[Optional. What the user should verify or try next.]
